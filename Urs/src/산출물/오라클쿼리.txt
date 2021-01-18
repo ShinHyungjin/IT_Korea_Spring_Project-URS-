@@ -1,0 +1,202 @@
+--- TableSpace 생성, 총 관리자(urs) 생성 및 권한부여 ---
+
+create tablespace urs
+datafile 'C:\oraclexe\app\oracle\oradata\XE\urs.dbf'
+size 20m;
+
+create user urs
+identified by urs
+default tablespace urs
+quota unlimited on urs;
+
+grant create session to urs;
+grant create table to urs;
+grant create sequence to urs;
+
+--- 회원(점포+이용고객)테이블 생성 ---
+create table member(
+member_id number primary key,
+user_id varchar2(15) not null,
+user_password varchar2(150) not null,
+user_name varchar2(14) not null,
+user_birthday date not null,
+user_gender varchar2(9) not null,
+user_email_id varchar2(25) not null,
+user_email_server varchar2(15) not null,
+user_phone varchar2(18) not null,
+user_location varchar2(100) not null,
+user_image varchar2(20),
+user_position varchar2(10) not null default 'user',
+user_roulette varchar2(5) default 'false',
+user_regdate date default sysdate
+);
+
+create sequence seq_member
+increment by 1
+start with 1;
+
+--- 점포 테이블 생성 ---
+create table store(
+store_id number primary key,
+store_name varchar2(50) not null,
+store_location varchar2(100) not null,
+store_phone varchar2(18) not null,
+store_repimg varchar2(20) not null,
+store_reservation varchar2(5) default 'false',
+store_openhour varchar2(10) not null,
+store_closehour varchar2(10) not null,
+store_pass varchar2(5) default 'false',
+category_id number not null,
+store_account varchar2(40) not null,
+store_image varchar2(20),
+store_info clob,
+store_regdate date default sysdate,
+store_tablecount varchar2(200) default 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm',
+constraint fk_categorystore foreign key(category_id) references category(category_id)
+);
+
+create sequence seq_store
+increment by 1
+start with 1;
+
+--- 메뉴 테이블 생성 ---
+create table menu(
+menu_id number primary key,
+store_id number not null,
+menu_name varchar2(50) not null,
+menu_price number not null,
+menu_image varchar2(20),
+menu_stock varchar2(5) default 'true',
+constraint fk_storemenu foreign key(store_id) references store(store_id)
+);
+
+create sequence seq_menu
+increment by 1
+start with 1;
+
+--- 카테고리 테이블 생성 ---
+create table category(
+category_id number primary key,
+category_name varchar2(50) not null,
+category_image varchar2(30)
+);
+
+create sequence seq_category
+increment by 1
+start with 1;
+
+--- 영수증 테이블 생성 (외래키 2개)---
+create table receipt(
+receipt_id number primary key,
+member_id number,
+store_id number,
+receipt_regdate date default sysdate,
+receipt_totalamount number not null,
+constraint fk_memberreceipt foreign key(member_id) references member(member_id),
+constraint fk_storereceipt foreign key(store_id) references store(store_id)
+);
+
+create sequence seq_receipt
+increment by 1
+start with 1;
+
+--- 예약 테이블 생성 ---
+create table reservation(
+reservation_id number primary key,
+menu_id number not null,
+menu_count number not null,
+receipt_id number,
+constraint fk_menureservation foreign key(menu_id) references menu(menu_id),
+constraint fk_receiptreservation foreign key(receipt_id) references receipt(receipt_id)
+);
+
+create sequence seq_reservation
+increment by 1
+start with 1;
+
+--- 즐겨찾기 테이블 생성 ---
+create table bookmark(
+bookmark_id number primary key,
+member_id number,
+store_id number,
+constraint fk_memberbookmark foreign key(member_id) references member(member_id),
+constraint fk_storebookmark foreign key(store_id) references store(store_id)
+);
+
+create sequence seq_bookmark
+increment by 1
+start with 1;
+
+--- 리뷰 테이블 생성 ---
+create table review(
+review_id number primary key,
+member_id number,
+store_id number,
+review_star number not null,
+review_comment clob,
+constraint fk_memberreview foreign key(member_id) references member(member_id),
+constraint fk_storereview foreign key(store_id) references store(store_id)
+);
+
+create sequence seq_review
+increment by 1
+start with 1;
+
+
+--- 카테고리 테이블 변경(이미지이름) ---
+ALTER TABLE category MODIFY(category_image varchar2(30));
+
+--- 회원 테이블 변경(회원성별, 포지션) ---
+ALTER TABLE member MODIFY(user_gender varchar2(9));
+ALTER TABLE member MODIFY(user_position varchar2(10) default 'user');
+alter table member modify user_image null;
+
+--- 점포 테이블 변경(Table Count) ---
+UPDATE store SET STORE_TABLECOUNT = NULL;
+ALTER TABLE store MODIFY(store_tablecount varchar2(200) default 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm');
+UPDATE store SET STORE_TABLECOUNT = 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm';
+
+--- 제약조건 삭제 및 추가 ---
+ALTER TABLE review DROP CONSTRAINT fk_storereview CASCADE;
+ALTER TABLE bookmark DROP CONSTRAINT fk_storebookmark CASCADE;
+ALTER TABLE receipt DROP CONSTRAINT fk_storereceipt CASCADE;
+ALTER TABLE menu DROP CONSTRAINT fk_storemenu CASCADE;
+
+ALTER TABLE review ADD CONSTRAINTS fk_storereview FOREIGN KEY (store_id) references store(store_id);
+ALTER TABLE bookmark ADD CONSTRAINTS fk_storebookmark FOREIGN KEY (store_id) references store(store_id);
+ALTER TABLE receipt ADD CONSTRAINTS fk_storereceipt FOREIGN KEY (store_id) references store(store_id);
+ALTER TABLE menu ADD CONSTRAINTS fk_storemenu FOREIGN KEY (store_id) references store(store_id);
+
+--- 카테고리 이미지 등록 ---
+insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '한식', 'koreanfood_icon.png');
+insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '중식', 'chinesfood_icon.png');
+insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '일식', 'japanesfood_icon.png');
+insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '남미식', 'latinamericanfood_icon.png');
+insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '양식', 'westernstylefood_icon.png');
+insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '패스트푸드', 'fastfood_icon.png');
+
+--- 점포 등록 ---
+insert into store(store_id, store_name, store_location, store_phone, store_repimg, store_reservation, store_openhour, store_closehour, store_pass, category_id, store_account, store_image, store_info, store_tablecount)  values(seq_store.nextval, '연안식당', '강남점', '02-1234-5678', 'kfbusiness.png', 'TRUE', '12:00', '23:00', 'FALSE', 1, '0222123-03-142', 'yeonan.png', '마싯는 꼬막비빔밥 파라요', 20);
+insert into store(store_id, store_name, store_location, store_phone, store_repimg, store_reservation, store_openhour, store_closehour, store_pass, category_id, store_account, store_image, store_info, store_tablecount)  values(seq_store.nextval, '홍콩반점', '역삼점', '02-1212-3434', 'cfbusiness.png', 'TRUE', '09:00', '22:00', 'FALSE', 2, '0222321-02-451', 'hongkong.png', '조보아씨 빨리 와서 먹어봐요', 44);
+insert into store(store_id, store_name, store_location, store_phone, store_repimg, store_reservation, store_openhour, store_closehour, store_pass, category_id, store_account, store_image, store_info, store_tablecount)  values(seq_store.nextval, '쿠우쿠우', '여의도점', '02-3434-1212', 'jfbusiness.png', 'TRUE', '11:00', '21:30', 'FALSE', 3, '0222741-21-879', 'qooqoo.png', '초밥 무한리필', 60);
+insert into store(store_id, store_name, store_location, store_phone, store_repimg, store_reservation, store_openhour, store_closehour, store_pass, category_id, store_account, store_image, store_info, store_tablecount)  values(seq_store.nextval, '바토스', '이태원점', '02-4545-6767', 'lfbusiness.png', 'FALSE', '15:00', '23:30', 'FALSE', 4, '0221415-08-011', 'vatos.png', '멕시코 전통 음식점', 16);
+insert into store(store_id, store_name, store_location, store_phone, store_repimg, store_reservation, store_openhour, store_closehour, store_pass, category_id, store_account, store_image, store_info, store_tablecount)  values(seq_store.nextval, '빕스', '잠실점', '02-6767-4545', 'wfbusiness.png', 'TRUE', '00:00', '24:00', 'TRUE', 5, '0227958-12-572', 'vips.png', '맞추면 빕스', 40);
+insert into store(store_id, store_name, store_location, store_phone, store_repimg, store_reservation, store_openhour, store_closehour, store_pass, category_id, store_account, store_image, store_info, store_tablecount)  values(seq_store.nextval, '버거킹', '신촌점', '02-5678-1234', 'ffbusiness.png', 'TRUE', '10:00', '22:00', 'FALSE', 6, '0222723-01-071', 'burgerking.png', '마싯는 와퍼 파라요', 32);
+
+--- 회원 등록 ---
+insert into member(member_id, user_id , user_password, user_name, user_birthday, user_gender, user_email_id, user_email_server, user_phone, user_location, user_image, user_position, user_roulette) values (seq_member.nextval, 'shin', 1234, '신형진', '1995-04-02', '남자', 'shinhyungjin','naver.com', '010-5300-9672', '서울특별시', 'shin.png', 'TRUE', 'TRUE');
+insert into member(member_id, user_id , user_password, user_name, user_birthday, user_gender, user_email_id, user_email_server, user_phone, user_location, user_image, user_position, user_roulette) values (seq_member.nextval, 'be', 1234, '배성민', '1996-10-03', '남자', 'be','naver.com', '010-1234-5678', '경기도', 'be.png', 'FALSE', 'FALSE');
+
+--- 메뉴 등록 ---
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 1, '꼬막 비빔밥', 20000, 'ggomak.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 1, '게살 비빔밥', 22000, 'crab.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 2, '자장면', 6000, 'jajangmyun.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 2, '짬뽕', 8000, 'jjanmbbong.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 3, '나베', 34000, 'nabe.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 3, '연어초밥', 19000, 'susi.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 4, '스테이크', 28000, 'steak.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 4, '토마토파스타', 11000, 'tomatopasta.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 5, '브리또', 8000, 'britto.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 5, '불고기타코', 10000, 'bulgogitaco.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 6, '와퍼', 6700, 'whopper.png', 'TRUE');
+INSERT INTO menu(menu_id, store_id, menu_name, menu_price, menu_image, menu_stock) VALUES(seq_menu.nextval, 6, '기네스 와퍼', 7600, 'gines.png', 'TRUE');

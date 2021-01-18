@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Menu">
+
+   <!-- <select id="selectAll" resultType="Menu">
+      select * from menu order by menu_id
+   </select> -->
+   <select id="select" resultType="Menu" parameterType="int">
+         select * from menu where menu_id=#{menu_id}
+   </select>
+   
+   <select id="selectById" resultType="Menu" parameterType="int">
+         select * from menu where store_id=#{store_id}
+   </select>
+   
+   <select id="selectByImage" resultType="String" parameterType="int">
+         select menu_image from menu where menu_id=#{menu_id}
+   </select>
+   
+   	<insert id="insert" parameterType="Menu">
+   		insert into menu (menu_id,store_id,menu_name,menu_price,menu_stock,menu_image) values(seq_menu.nextval,#{store_id},#{menu_name},#{menu_price},#{menu_stock},#{menu_image})
+   	<selectKey order="AFTER" keyProperty="menu_id" resultType="int">
+			select seq_menu.currval as menu_id from dual
+		</selectKey>
+   	</insert>
+   
+      <update id="update" parameterType="Menu">
+         update menu set menu_id=#{menu_id}, menu_name=#{menu_name}, menu_price=#{menu_price}, 
+         menu_stock=#{menu_stock}, menu_image=#{menu_image} where menu_id=#{menu_id}
+      </update>
+   
+   <delete id="deleteById" parameterType="int">
+      delete from menu where store_id=#{store_id}
+   </delete>
+   
+   <delete id="delete" parameterType="int">
+        delete from menu where menu_id=#{menu_id}
+   </delete>
+   
+   <select id="countmenu" resultType="int">
+      	select count(menu_id) from menu m inner join store s on m.store_id = s.store_id and s.store_pass = 'TRUE'
+   </select>
+   
+
+
+</mapper>

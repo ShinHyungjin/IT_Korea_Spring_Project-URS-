@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="com.sbj.urs.model.domain.BookMark" 	alias="BookMark"/>		
+		<typeAlias type="com.sbj.urs.model.domain.Category" 	alias="Category"/>		
+		<typeAlias type="com.sbj.urs.model.domain.Member" 	alias="Member"/>		
+		<typeAlias type="com.sbj.urs.model.domain.Menu" 	alias="Menu"/>		
+		<typeAlias type="com.sbj.urs.model.domain.Receipt" 	alias="Receipt"/>		
+		<typeAlias type="com.sbj.urs.model.domain.Reservation" 	alias="Reservation"/>		
+		<typeAlias type="com.sbj.urs.model.domain.Review" 	alias="Review"/>		
+		<typeAlias type="com.sbj.urs.model.domain.Store" 	alias="Store"/>		
+		<typeAlias type="com.sbj.urs.model.domain.TableMap"    alias="TableMap"/>      
+	</typeAliases>
+	<mappers>
+		<mapper resource="com/sbj/urs/mybatis/mapper/BookMarkMapper.xml"/>
+		<mapper resource="com/sbj/urs/mybatis/mapper/CategoryMapper.xml"/>
+		<mapper resource="com/sbj/urs/mybatis/mapper/MemberMapper.xml"/>
+		<mapper resource="com/sbj/urs/mybatis/mapper/MenuMapper.xml"/>
+		<mapper resource="com/sbj/urs/mybatis/mapper/ReceiptMapper.xml"/>
+		<mapper resource="com/sbj/urs/mybatis/mapper/ReservationMapper.xml"/>
+		<mapper resource="com/sbj/urs/mybatis/mapper/ReviewMapper.xml"/>
+		<mapper resource="com/sbj/urs/mybatis/mapper/StoreMapper.xml"/> 
+		<mapper resource="com/sbj/urs/mybatis/mapper/TableMapMapper.xml"/> 
+	</mappers>
+</configuration>

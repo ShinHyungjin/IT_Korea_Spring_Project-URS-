@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop
+    	http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+	
+		<!-- json 컨버터 등록 !! -->
+	<beans:bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<beans:property name="messageConverters">
+			<beans:list value-type="java.util.ArrayList">
+				<beans:ref bean="mappingJackson2HttpMessageConverter"/>
+			</beans:list>
+		</beans:property>				
+	</beans:bean>
+	
+	<beans:bean id="mappingJackson2HttpMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<beans:property name="supportedMediaTypes">
+			<!-- 개발자가 원하는 각종 타입들을 여러개 명시할 수 있다 -->
+			<beans:list>
+				<beans:value>application/json;charset=utf-8</beans:value>
+			</beans:list>
+		</beans:property>	
+	</beans:bean>
+	
+	<!-- 업로드를 위한 설정 : 주의- id가 정해져있다 개발자가 맘대로 바꾸면 안됨 -->
+	<beans:bean id="multipartResolver" 
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<beans:bean id="memberSessionCheckAspect" class="com.sbj.urs.aop.MemberSessionCheckAspect"></beans:bean>
+	<beans:bean id="adminSessionCheckAspect" class="com.sbj.urs.aop.AdminSessionCheckAspect"></beans:bean>
+	<beans:bean id="storeSessionCheckAspect" class="com.sbj.urs.aop.StoreSessionCheckAspect"></beans:bean>
+	
+	<context:component-scan base-package="com.sbj.urs.controller" />
+	 
+	 <aop:config>
+	 	<aop:aspect id="sessionCheckAspect" ref="memberSessionCheckAspect">
+<!-- 어떤 메서드 실행시 관여할지 서술                                                              .모든파일 * 모든메서드 (**)모든 메개변수   ex) ..*DAO(**) dao로끝나는모든 파일  -->
+	 	<aop:pointcut expression="execution(public * com.sbj.urs.controller.member..mypage(..))||execution(public * com.sbj.urs.controller.member..storeregist(..))" id="sessionPointcut"/>
+	 	<aop:around method="sessionCheck" pointcut-ref="sessionPointcut"/>
+	 	</aop:aspect>
+	 	
+	 	<aop:aspect id="admincheckaspect" ref="adminSessionCheckAspect">
+	 	<aop:pointcut expression="execution(public * com.sbj.urs.controller.admin..*(..))" id="adminSessionPointcut"/>
+	 	<aop:around method="sessionCheck" pointcut-ref="adminSessionPointcut"/>
+	 	</aop:aspect>
+	 	
+	 	<aop:aspect id="storecheckaspect" ref="storeSessionCheckAspect">
+	 	<aop:pointcut expression="execution(public * com.sbj.urs.controller.store..*(..))" id="storeSessionPointcut"/>
+	 	<aop:around method="sessionCheck" pointcut-ref="storeSessionPointcut"/>
+	 	</aop:aspect>
+	 	
+	 	<aop:aspect id="categoryDataAspect" ref="globalDataAspect">
+	 	<!-- 어떤 메서드 실행시 관여할지 서술                                                              .모든파일 * 모든메서드 (**)모든 메개변수   ex) ..*DAO(**) dao로끝나는모든 파일  -->
+	 	<aop:pointcut expression="execution(public * com.sbj.urs.controller.main..*(..)) || execution(public * com.sbj.urs.controller.member..*(..)) || execution(public * com.sbj.urs.controller.menu..*(..))" id="aspectpointcut"/>
+	 	<aop:around method="getGlobalData" pointcut-ref="aspectpointcut"/>
+	 	</aop:aspect>
+	 </aop:config>
+	 
+	 <beans:bean id="globalExceptionHandler" class="com.sbj.urs.aop.GlobalExceptionHandler"></beans:bean>
+	  
+	 <beans:bean id="globalDataAspect" class="com.sbj.urs.aop.GlobalDataAspect"></beans:bean>
+	  
+
+</beans:beans>

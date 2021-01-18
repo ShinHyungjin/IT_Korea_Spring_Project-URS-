@@ -1,0 +1,43 @@
+1. 'project.zip' 압축 해제
+2. 압축해제시 나오는 'urs'폴더 복사
+3. 새로운 WorkSpace 생성 = 폴더 생성 (앞으로 쓸 본인의 팀플 프로젝트 폴더)
+4. 해당 WorkSpace의 경로를 파일탐색기로 접속하여 복사한 'urs'폴더 붙여넣기
+5. eclipse 실행해서 WorkSpace를 생성한 폴더로 지정하여 실행
+6. import로 해당 폴더에 있는 urs 지정 후 등록
+7. 모든 파일이 적용될 때 까지 대기 (1-2분 소요)
+8. Server를 생성하여 server.xml , context.xml, modules 설정
+
+<!-- modules -->
+port : 8888
+urs 등록
+
+<!-- server.xml -->
+<Resource auth="Container" description="User database that can be updated and saved" factory="org.apache.catalina.users.MemoryUserDatabaseFactory" name="UserDatabase" pathname="conf/tomcat-users.xml" type="org.apache.catalina.UserDatabase"/>	
+<Resource auth="Container" driverClassName="org.mariadb.jdbc.Driver" maxIdle="10" maxWait="3000" name="jdbc/mariadb" nmaxActive="20" password="1234" type="javax.sql.DataSource" url="jdbc:mariadb://localhost/db1216" username="root"/>
+<Resource auth="Container" driverClassName="oracle.jdbc.driver.OracleDriver" maxIdle="10" maxWait="3000" name="jdbc/oracle" nmaxActive="20" password="urs" type="javax.sql.DataSource" url="jdbc:oracle:thin:@localhost:1521:XE" username="urs"/>
+
+<!-- context.xml -->
+<ResourceLink type="javax.sql.DataSource"
+		name="jdbc/mariadb" global="jdbc/mariadb" />
+
+<ResourceLink type="javax.sql.DataSource"
+		name="jdbc/oracle" global="jdbc/oracle" />
+
+
+★ 순서 중요함 moduls -> server.xml -> context.xml★
+
+9. Project Facets 에 톰캣등록
+
+10. 톰캣 실행후 localhost:8888/
+
+11. Eclipse Market -> DBeaver 7.3.2 설치
+
+12. 데이터베이스 - 새 데이터베이트 연결 - Oracle - Basic탭의 Database를 'XE'로
+
+13. Authentication 탭의 Username 은 system password 1234
+
+14. 우측 하단에 Edit Driver Settings 에서 XE로
+
+15. Driver properties 탭 클릭해서 드라이버 Download
+
+16. Finish

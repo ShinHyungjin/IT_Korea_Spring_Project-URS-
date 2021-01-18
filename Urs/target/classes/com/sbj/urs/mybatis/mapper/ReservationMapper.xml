@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Reservation">
+
+   <select id="selectAll" resultType="Reservation">
+      select * from reservation order by reservation_id
+   </select>
+   
+   <select id="selectAllById" resultType="Reservation" parameterType="int">
+      select * from reservation where receipt_id=#{receipt_id}
+   </select>
+   
+   <delete id="delete" parameterType="int">
+      delete from reservation where receipt_id = #{receipt_id}
+   </delete>
+   
+   <insert id="insert" parameterType="Reservation">
+        insert into reservation(reservation_id, menu_id, receipt_id) values(seq_reservation.nextval, #{menu_id}, #{receipt_id})      
+   </insert>
+
+</mapper>

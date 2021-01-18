@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Receipt">            
+   
+     <insert id="insert" parameterType="Receipt">
+      insert into receipt(receipt_id,member_id,store_id,receipt_totalamount,menu_quantity, reservation_table) 
+      values(seq_receipt.nextval, #{member_id}, #{store_id},#{receipt_totalamount}, #{menu_quantity}, #{reservation_table})
+      <selectKey order="AFTER" keyProperty="receipt_id" resultType="int">
+         select seq_receipt.currval as receipt_id from dual
+      </selectKey>
+   </insert>
+   
+   <select id="selectAll" resultType="Receipt">
+      select * from receipt order by receipt_id
+   </select>
+   
+   <select id="select" parameterType="int" resultType="Receipt">
+      select * from receipt where receipt_id=#{receipt_id}
+   </select>
+   
+   <delete id="delete" parameterType="int">
+      delete from receipt where receipt_id = #{receipt_id}
+   </delete>
+   
+   <select id="selectByStoreId" parameterType="int" resultType="Receipt">
+      select * from receipt where store_id=#{store_id}
+   </select>
+   
+   <select id="selectByMemberId" parameterType="int" resultType="Receipt">
+		select * from receipt where member_id=#{member_id}
+   </select>
+  
+   
+</mapper>

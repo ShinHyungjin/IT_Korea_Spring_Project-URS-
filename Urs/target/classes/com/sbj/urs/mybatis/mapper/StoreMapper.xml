@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Store">
+
+   <!--1대1관계 association  -->
+   <resultMap id="storeCategoryMap" type="Store">
+   <id column="store_id" property="store_id"/>
+   <result column="store_name" property="store_name"/>
+   <result column="store_location" property="store_location"/>
+   <result column="store_phone" property="store_phone"/>
+   <result column="store_repimg" property="store_repimg"/>
+   <result column="store_reservation" property="store_reservation"/>
+   <result column="store_openhour" property="store_openhour"/>
+   <result column="store_closehour" property="store_closehour"/>
+   <result column="store_pass" property="store_pass"/>
+   <result column="store_account" property="store_account"/>
+   <result column="store_image" property="store_image"/>
+   <result column="store_info" property="store_info"/>
+   <result column="store_regdate" property="regdate"/>
+   
+   <association column="category_id" property="category" javaType="Category" select="Category.selectOne"></association>
+   
+   </resultMap>
+
+   <select id="selectAll" resultMap="storeCategoryMap">
+      select * from store order by store_id desc
+   </select>    
+   
+   <select id="selectAllById" parameterType="int" resultMap="storeCategoryMap">
+      select * from store where category_id=#{category_id}
+   </select>
+   
+   <select id="selectById" parameterType="int" resultMap="storeCategoryMap">
+      select * from store where store_id=#{store_id}
+   </select>
+   
+   <select id="selectByRepImage" parameterType="int" resultType="String">
+      select store_repimg from store where store_id = #{store_id}
+   </select>
+   
+   <select id="selectBymemberId" parameterType="int" resultMap="storeCategoryMap">
+ 	  select * from store where member_id = #{member_id}
+   </select>
+   
+   <select id="selectByImage" parameterType="int" resultType="String">
+      select store_image from store where store_id = #{store_id}
+   </select>
+   
+   <insert id="insert" parameterType="Store">
+   insert into store(store_id, store_name,store_location, store_phone,store_repimg,store_openhour,store_closehour, store_bank, store_account,category_id, store_image,member_id) values (seq_store.nextval,#{store_name},#{store_location},#{store_phone},#{store_repimg},#{store_openhour},#{store_closehour},#{store_bank},#{store_account},#{category.category_id},#{store_image},#{member_id})
+   </insert>
+   
+   <update id="update" parameterType="Store">
+         update store set store_name=#{store_name}, store_location=#{store_location}, store_phone=#{store_phone}, 
+         store_reservation=#{store_reservation}, store_repimg=#{store_repimg}, store_bank=#{store_bank}, store_account=#{store_account},
+         category_id=#{category.category_id}, store_image=#{store_image}, store_pass=#{store_pass} where store_id=#{store_id}
+   </update>
+   
+   
+      <update id="updatepic" parameterType="Store">
+         update store set store_id=#{store_id}, store_name=#{store_name}, store_location=#{store_location}, store_phone=#{store_phone},store_repimg=#{store_repimg}, store_bank=#{store_bank}, store_account=#{store_account},category_id=#{category.category_id}, store_image=#{store_image},store_openhour=#{store_openhour},store_closehour=#{store_closehour} where store_id=#{store_id}
+   </update>
+   
+   
+      
+   <delete id="delete" parameterType="int">
+       delete from store where store_id=#{store_id}
+   </delete>
+   
+   <select id="countstore" resultType="int">
+   		select count(store_id) from store where store_pass = 'TRUE'
+   </select>
+
+</mapper>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Member">
+
+	<select id="selectAll" resultType="Member">
+		select * from member order by member_id
+	</select> 
+	
+	 <insert id="insert" parameterType="Member">
+		insert into member(member_id, user_id , user_password, user_name, user_birthday, user_gender, user_email_id, user_email_server, user_phone, user_location, user_image) values (seq_member.nextval, #{user_id}, #{user_password},#{user_name},#{user_birthday},#{user_gender},#{user_email_id},#{user_email_server},#{user_phone},#{user_location}<if test='user_image == null and user_image=""'>, #{user_image}</if>)
+		<selectKey order="AFTER" keyProperty="member_id" resultType="int">
+			select seq_member.currval as member_id from dual
+		</selectKey>
+	</insert>
+	
+	<select id="selectUser" parameterType="int" resultType="Member">
+		select * from member where member_id = #{member_id}
+	</select>
+	
+	<select id="selectUserPW" parameterType="String" resultType="Member">
+		select * from member where user_id = #{user_id}
+	</select>
+	
+	<select id="checkuser" parameterType="String" resultType="Member">
+		select * from member where user_id = #{user_id}
+	</select>
+	
+	<select id="selectAcc" parameterType="Member" resultType="Member" >
+	 select * from member where user_id = #{user_id} AND user_password = #{user_password}
+	</select>
+	
+	<select id="checkpw" parameterType="Member" resultType="Member">
+	select * from member where user_password = #{user_password} and user_id = #{user_id}
+	</select>
+	
+	<update id="resetpw" parameterType="Member">
+		update member set user_password = #{user_password} where user_id = #{user_id}
+	</update>
+	
+	<update id="update" parameterType="Member">
+		update member set user_name = #{user_name}, user_birthday= #{user_birthday}, user_gender= #{user_gender}, user_email_id= #{user_email_id}, user_email_server= #{user_email_server}, user_phone= #{user_phone}, user_location= #{user_location}, user_image= #{user_image} where member_id = #{member_id}
+	</update>
+	
+	<update id="updateToAdmin" parameterType="Member">
+		update member set user_id=#{user_id}, user_name= #{user_name}, user_location=#{user_location} , user_phone=#{user_phone}, user_gender=#{user_gender}, user_email_id= #{user_email_id}, user_email_server= #{user_email_server} where member_id = #{member_id} 
+	</update>
+	
+	<update id="updateByPosition" parameterType="Member">
+	        update member set user_position=#{user_position} where member_id=#{member_id}
+	   </update>
+   
+   <delete id="delete" parameterType="int">
+         delete from member where member_id=#{member_id}
+   </delete>
+   
+   <select id="selectByImage" parameterType="int" resultType="String">
+        select user_image from member where member_id=#{member_id} 
+   </select>
+   
+   <select id="countuser" resultType="int">
+     select count(member_id) from member
+   </select>
+   
+ 	
+</mapper>
