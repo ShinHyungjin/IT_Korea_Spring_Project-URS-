@@ -177,7 +177,8 @@ function checkoutForm(){
                   <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
                      <div class="row">                                                   
                         <%for(int i=0; i<menuList.size(); i++){ %>
-                        <%Menu menu = menuList.get(i); %>                                    
+                        <%Menu menu = menuList.get(i); %>
+                          <%if(menu.getMenu_stock().equals("TRUE")){ %>                                    
                         <div class="col-lg-4 col-md-6 special-grid drinks">
                            <div class="gallery-single fix">
                               <img src="/resources/data/menu/<%=menu.getMenu_id()%>.<%=menu.getMenu_image() %>" style="width: 250px; height:200px" class="img-fluid" alt="Image">
@@ -196,31 +197,25 @@ function checkoutForm(){
                               </div>
                            </div> 
                         </div>
+                        <%}else{ %>
+                                                <div class="col-lg-4 col-md-6 special-grid drinks">
+                           <div class="gallery-single fix">
+                              <img src="/resources/data/menu/<%=menu.getMenu_id()%>.<%=menu.getMenu_image() %>" style="width: 250px; height:200px" class="img-fluid" alt="Image">
+                              <div class="why-text">
+                                 <input type="hidden" value="<%=menu.getMenu_id()%>"/>                                 
+                                 <h4><%=menu.getMenu_name() %></h4>
+                                  <div style="background-color: #642A02;text-align: center;font-size: 30px; padding-top: 10px" >
+                                 <h5 style="text-align: center;font-size: 30px">품절</h5>
+                                </div>
+                              </div>
+                           </div> 
+                        <%} %>
                         <%} %>
                      </div>                                                      
                   </div>
                   <!-- menu list end -->
                   
-                  <!-- menu event start -->                  
-                  <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                     <div class="row">
-                        <%for(int i=0; i<menuList.size(); i++){ %>
-                        <%Menu menu = menuList.get(i); %>
-                        <div class="col-lg-4 col-md-6 special-grid drinks">
-                           <div class="gallery-single fix">
-                              <img src="/resources/data/menu/<%=menu.getMenu_id()%>.<%=menu.getMenu_image() %>" class="img-fluid" alt="Image">
-                              <div class="why-text">
-                                 <h4>Special Drinks 1</h4>
-                                 <p>Sed id magna vitae eros sagittis euismod.</p>
-                                 <h5> $7.79</h5>
-                              </div>
-                           </div>                           
-                        </div>
-                        <%} %>                        
-                                       
-                        
-                     </div>
-                  </div>
+    
                   <!-- menu event end -->
                </div>
             </div>            

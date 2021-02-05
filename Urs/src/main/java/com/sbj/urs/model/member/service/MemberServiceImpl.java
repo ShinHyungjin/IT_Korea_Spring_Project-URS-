@@ -14,6 +14,7 @@ import com.sbj.urs.model.Common.FileManager;
 import com.sbj.urs.model.Common.GenerateRandomPassword;
 import com.sbj.urs.model.Common.MailSender;
 import com.sbj.urs.model.Common.SecureManager;
+import com.sbj.urs.model.Common.TempKey;
 import com.sbj.urs.model.domain.Member;
 import com.sbj.urs.model.member.repository.MemberDAO;
 
@@ -68,13 +69,16 @@ public class MemberServiceImpl implements MemberService{
 		String secureData = secureManager.getSecureData(member.getUser_password());
 		member.setUser_password(secureData); //변환시켜 다시 VO에 대입
 		
+		String authkey = new TempKey().getKey(50, false);
+		member.setAuthkey(authkey);
 		memberDAO.insert(member);
 		
 		String name=member.getUser_name();
 		String addr=member.getUser_email_id();
+		String verifylink ="http://localhost:8888/shop/member/verify?user_id="+member.getUser_id()+"&authkey="+member.getAuthkey();
 		String email = member.getUser_email_id()+"@"+member.getUser_email_server();
 		
-		mailSender.send(email , name+"님 [URS]가입축하드려요", "감사합니다!");
+		mailSender.send(email , name+"님 [URS]가입축하드려요", verifylink);
 		
 	
 		
@@ -160,4 +164,23 @@ public class MemberServiceImpl implements MemberService{
 	public void updateToAdmin(Member member) {
 		memberDAO.updateToAdmin(member);
 	}
+	
+	@Override
+	public void verifyEmail(Member member) throws MemberNotFoundException {
+		// TODO Auto-generated method stub
+		memberDAO.verifyEmail(member);
+	}
+	
+	@Override
+	public void changePass(Member mebmer) throws MemberNotFoundException {
+		String hash = secureManager.getSecureData(mebmer.getUser_password()); 
+		mebmer.setUser_password(hash);
+		memberDAO.changePass(mebmer);
+		
+	}
+
+//	@Override
+//	public Member selectBySotreId(int store_id) {
+//		return memberDAO.selectBySotreId(store_id);
+//	}
 }

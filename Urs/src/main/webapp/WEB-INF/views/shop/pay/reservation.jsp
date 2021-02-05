@@ -90,10 +90,22 @@
        $("input[name='reservation_table']").val("<%=reservationTableInx%>");//손님이 선택한 좌석만(결제 취소시 삭제용도)       
        $("#payment").attr({
          action:"/customer/reservation",
-         method:"post"         
+         method:"post"
       });
       $("#payment").submit();        
    }
+   
+   function kakaopayment(){
+	   $("input[name='store_id']").val(<%=store_id%>);       
+       $("input[name='unavailable']").val("<%=unavailable%>"); //예약된 총좌석
+       $("input[name='reservation_table']").val("<%=reservationTableInx%>");//손님이 선택한 좌석만(결제 취소시 삭제용도)       
+	   $("#kakaopay").attr({
+	         action:"/kakaoPay",
+	         method:"POST"         
+	      });
+	      $("#kakaopay").submit();        
+}
+   
    </script>
 </head>
 
@@ -186,6 +198,15 @@
                             <input type="hidden" name="reservation_table">
                             <input type="hidden" name="menu_ids" value="<%=menu_ids%>">
                             <a href="javascript:checkoutForm()" class="btn karl-checkout-btn" style="background: orange; color:white;">결제 하기</a>
+                            </form>
+                            <form id="kakaopay">                            
+                            <input type="hidden" name="store_id">
+                            <input type="hidden" name="receipt_totalamount" value="<%=FinalTotal%>">
+                            <input type="hidden" name="menu_quantity" value="<%=FinalQuantity%>">
+                            <input type="hidden" name="unavailable">
+                            <input type="hidden" name="reservation_table">
+                            <input type="hidden" name="menu_ids" value="<%=menu_ids%>">
+                            <img src="/resources/data/kakaopay/paymenticon.png" onclick="kakaopayment()" style="width:400px;height:100px; margin-top:20px; cursor:pointer;">
                             </form>
                         </div>
                     </div>

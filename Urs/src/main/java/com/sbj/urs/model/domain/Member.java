@@ -23,6 +23,8 @@ public class Member {
 	private String user_position;
 	private String user_roulette;
 	private String regdate;
+	private String authkey;
+	private String authstatus;
 	
 	private MultipartFile u_image;
 	

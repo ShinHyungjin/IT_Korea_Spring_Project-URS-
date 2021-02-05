@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script>
+
+//문서가 로드되면, 웹소켓 서버에 접속을 시도하자!
+$(function(){
+    connect();
+    getList();
+ 
+    $("#bt_login").click(function(){
+		 login();
+    });
+   
+ 
+});
+
+
+
+function connect(){
+    //connect to server!!
+    sock = new SockJS("http://localhost:8888/rest/ws/client");
+
+    //웹소켓 객체가 생성되었으므로, 이 시점 부터는 각종 이벤트를 처리하자!!
+    //서버와 연결을 성공했을때의 이벤트 
+    sock.onopen=function(e){
+        $("#board-title").html("서버 접속 완료");
+    }
+    
+    sock.onclose=function(e){
+        $("#board-title").html("서버 접속 해제");
+    }
+
+    //서버로부터 메시지가 도착했을때..
+    sock.onmessage=function(e){
+        var msg = e.data;
+        
+        console.log("msg is =", msg);
+
+        var json = JSON.parse(msg);        
+        console.log("웹소켓을 통해 서버로부터 받은 메시지: ", json.requestCode);
+
+   
+    }
+    
+}   
+
+//화면 동적 출력
+function getList(){
+	//rest server에서 데이터 가져오기 
+	$.ajax({
+		url:"/rest/category",
+		type:"GET",
+		success:function(responseData){
+		 console.log(responseData);
+		},
+		error:function(xhr, status, error){
+			console.log(xhr);
+		}		
+	});	
+}
+
+function login(){
+    var form = $("#log_in_form").serialize();
+    var json={};
+    json["user_id"]=$("#user_id").val();
+    json["user_password"]=$("#user_password").val();
+	
+    console.log(json);
+   
+	$.ajax({
+		url:"/rest/member",
+		method:"POST",
+		data:JSON.stringify(json),
+		contentType:"application/json;charset=utf-8",
+		success:function(responseData){
+				console.log(responseData); 			
+		}
+	});
+}
+
+</script>
+</head>
+<body>
+   <h1 id="board-title">RealTime Board</h1>
+ <form id="log_in_form">
+
+	<h1>Log-In</h1>
+  <label>
+    <p class="label-txt">ENTER YOUR NAME</p>
+    <input type="text" class="input" id="user_id" name="user_id">
+    <div class="line-box">
+      <div class="line"></div>
+    </div>
+  </label>
+  <label>
+    <p class="label-txt">ENTER YOUR PASSWORD</p>
+    <input type="password" class="input" id="user_password"  name="user_password">
+    <div class="line-box">
+      <div class="line"></div>
+    </div>
+  </label>
+  <div style="height: 8rem">
+  <div style="text-align: left; float: left;" ><a href="/shop/member/forgotpassword" >비밀번호를 잊어버리셨나요?</a></div><div style="text-align: right; color: white "><a href="/shop/member/registForm">회원가입</a></a></div>
+  </div> 
+  <button type="button" id="bt_login">로그인</button>
+</form>
+
+    <a href="/rest/store/1">한식</a> 
+       <a href="/rest/store/2">중식</a> 
+          <a href="/rest/store/3">일식</a> 
+             <a href="/rest/store/4">남미식</a> 
+                <a href="/rest/store/5">양식</a> 
+                   <a href="/rest/store/6">패스트푸드</a> 
+    
+       
+</body>
+</html>

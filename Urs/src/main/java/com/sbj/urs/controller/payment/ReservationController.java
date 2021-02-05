@@ -71,7 +71,7 @@ public class ReservationController {
       return mav;
    }
    
-   @RequestMapping(value="/customer/reservation", method=RequestMethod.POST)
+   @RequestMapping(value="/customer/reservation", method=RequestMethod.GET)
    public ModelAndView payment(HttpServletRequest request, String store_id, int receipt_totalamount, int menu_quantity, String unavailable, String reservation_table, String menu_ids) {
       HttpSession session = request.getSession();
       Member sessionmember = (Member)session.getAttribute("member"); //get member session

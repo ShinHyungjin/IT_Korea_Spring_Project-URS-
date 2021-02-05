@@ -248,8 +248,9 @@ public class AdminController {
 
 		menuService.deleteById(store_id);
 		tableMapService.deleteById(store_id);
-
-		Member member = memberService.selectOne(store_id);
+		
+		
+		Member member = memberService.selectOne(storeService.selectById(store_id).getMember_id());
 		member.setUser_position("user");
 		memberService.updateByPosition(member);
 

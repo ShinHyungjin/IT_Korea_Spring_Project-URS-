@@ -29,6 +29,8 @@ public class MybatisMemberDAO implements MemberDAO{
 		Member obj =  (Member)sqlSessionTemplate.selectOne("Member.selectAcc",member);
 		if(obj == null) {
 			throw new MemberNotFoundException("로그인 정보가 올바르지 않습니다.");
+		}else if(obj.getAuthstatus().equals("0")) {
+			throw new CheckIdforPwException("이메일 인증이 완료되지않았습니다 이메일을 확인해주세요");
 		}
 		return obj;
 	}
@@ -82,9 +84,8 @@ public class MybatisMemberDAO implements MemberDAO{
 	@Override
 	public Member checkpw(Member member) throws CheckPwException {
 		Member obj = sqlSessionTemplate.selectOne("Member.checkpw",member);
-		System.out.println(obj);
 		if(obj == null) {
-			throw new CheckPwException("비밀번호가 올바르지 않습니다");
+			throw new CheckPwException("현재 비밀번호가 올바르지 않습니다");
 		}
  
 		return obj;
@@ -111,5 +112,29 @@ public class MybatisMemberDAO implements MemberDAO{
 		sqlSessionTemplate.update("Member.updateToAdmin", member);
 	}
 	
+	@Override
+	public void verifyEmail(Member member) throws MemberNotFoundException {
+		// TODO Auto-generated method stub
+	 int result = sqlSessionTemplate.update("Member.verifyEmail",member);
+	
+	 if(result == 0) {
+		throw new MemberNotFoundException("잘못된 접근입니다.");
+	 }
+	 
+	}
+	
+	@Override
+	public void changePass(Member member) throws MemberNotFoundException{
+		int result = sqlSessionTemplate.update("Member.changePass",member);
+		if(result == 0 ) {
+			throw new MemberNotFoundException("잘못 된 접근 입니다");
+		}
+		
+	}
+
+//	@Override
+//	public Member selectBySotreId(int store_id) {
+//		return sqlSessionTemplate.selectOne("Member.selectByStoreId", store_id);
+//	}
 
 }

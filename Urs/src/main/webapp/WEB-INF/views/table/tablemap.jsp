@@ -231,6 +231,10 @@ $(document).ready(function(){
    
     //클릭시
     $(".checkout-button").click(function(){
+       if(reservationTableInx.length==0){
+            alert("테이블을 선택해주세요");
+            return false;
+         }
        var str = "";
        var str2= "";
        

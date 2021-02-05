@@ -1,7 +1,9 @@
 package com.sbj.urs.controller.member;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -11,12 +13,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.sbj.urs.exceptoion.CheckPwException;
+import com.sbj.urs.exceptoion.MemberNotFoundException;
 import com.sbj.urs.model.Common.FileManager;
 import com.sbj.urs.model.domain.Member;
 import com.sbj.urs.model.domain.Menu;
@@ -172,7 +178,7 @@ public class MemberController implements ServletContextAware {
 		// 존재 O : 세션에 회원정보 담아두기
 		HttpSession session = request.getSession();
 		session.setAttribute("member", obj); // 현재 클라이언트 요청과 연계된 세션에 보관해 놓는다
-
+		
 		if (obj.getUser_position().equals("admin")) {
 			url = "redirect:/admin";
 		} else {
@@ -193,21 +199,6 @@ public class MemberController implements ServletContextAware {
 	@RequestMapping(value = "/shop/member/regist", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
 	@ResponseBody
 	public String registMember(Member member, HttpServletRequest request) {
-//		System.out.println("아이디" + member.getUser_id());
-//		System.out.println("비밀번호" + member.getUser_password());
-//		System.out.println("이름" + member.getUser_name());
-//		System.out.println("핸드폰" + member.getUser_phone());
-//		System.out.println("생일" + member.getUser_birthday());
-//		System.out.println("성별" + member.getUser_gender());
-//		System.out.println("이메일아이디" + member.getUser_email_id());
-//		System.out.println("서버" + member.getUser_email_server());
-//		
-//		
-//		System.out.println("주소" + member.getUser_location());
-//	 
-//	 
-//		
-//		System.out.println("이미지 이름 : " + member.getU_image().getOriginalFilename());
 
 		memberService.insert(fileManager, member);
 
@@ -220,7 +211,25 @@ public class MemberController implements ServletContextAware {
 
 		return sb.toString();
 	}
-
+	
+	//계정 인증
+	@RequestMapping(value="/shop/member/verify",method = RequestMethod.GET)
+	public ModelAndView verifyEmail(Member member, HttpServletRequest request) {
+		
+		memberService.verifyEmail(member);
+		
+		MessageData messageData = new MessageData();
+		messageData.setResultCode(1);
+		messageData.setMsg("인증이 완료 되었습니다.");
+		messageData.setUrl("/");
+		ModelAndView mav = new ModelAndView("shop/error/message");
+		mav.addObject("messageData", messageData);
+		
+		
+		return mav;
+		
+	}
+	
 	@RequestMapping(value = "/shop/member/update", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
 	@ResponseBody
 	public String update(Member member, HttpServletRequest request) {
@@ -242,6 +251,31 @@ public class MemberController implements ServletContextAware {
 		memberService.resetpw(user_id);
 		return "redirect:/";
 	}
+	
+
+	//비밀번호 변경
+	@RequestMapping(value="/shop/member/newPassword", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
+	@ResponseBody
+	public String newPass(String currentPass,String newPass,String confirmPass,String user_id,HttpServletRequest request) {
+		Member member = new Member();
+		member.setUser_password(currentPass);
+		member.setUser_id(user_id);
+ 
+		Member obj = memberService.checkpw(member);
+
+		if(newPass.equals(confirmPass)) {
+		obj.setUser_password(newPass);
+		memberService.changePass(obj);
+		}else {
+			throw new CheckPwException("새로운 비밀번호가 일치 하지않습니다");
+		}
+ 
+		
+		return null;
+ 
+		
+	}
+	
 
 	@RequestMapping(value = "/shop/member/applystore", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
 	public ModelAndView applystore(Store store, HttpServletRequest request) {

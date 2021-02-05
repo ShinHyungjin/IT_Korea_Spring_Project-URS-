@@ -31,7 +31,7 @@
         <%for(int k=0; k<numstore; k++) {%>
         <div class="row">
            <%for(int i = 0 ; i < 3 ; i++){ %>
-                 <% %>
+            
                  <%if(storetotal == storeList2.size()){break;} %>
                  <%Store storeDetail = storeList2.get(storetotal); %>
                  <%storetotal++; %>
@@ -42,7 +42,11 @@
               <div class="text">
                  <div class="d-flex">
                    <div class="one-half">
+                   <%if(storeDetail.getStore_reservation().equals("FALSE")){ %>
+                       <h3 style="color: gray"><%=storeDetail.getStore_name() %></h3>
+                   <%}else{ %>
                      <a href="/shop/store/category/menu?store_id=<%=storeDetail.getStore_id()%>"><h3><%=storeDetail.getStore_name() %></h3></a>
+                   <%} %>
                    </div>
                    <div class="one-forth">
                      <span class="price"><%if(storeDetail.getStore_reservation().equals("TRUE")) { %>예약가능<%} else {%>예약불가<%}%></span>
