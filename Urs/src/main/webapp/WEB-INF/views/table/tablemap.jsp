@@ -47,6 +47,13 @@
 <title>jQuery Seat Charts Plugin Demo</title>
 <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" href="/resources/tablecss/jquery.seat-charts.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <style>
 body {
    font-family: 'Roboto', sans-serif;
@@ -172,6 +179,7 @@ span.seatCharts-legendDescription {
 <script src="/resources/tablejs/jquery.seat-charts.js"></script>
 <script>   
 $(document).ready(function(){
+   connect();
    var getFirstData = true;
    var mapArr = new Array(); //관리자가 테이블 배치 후 담을 Array
    var unavailArr = new Array(); //예약된 좌석 unavailArray
@@ -279,153 +287,159 @@ $(document).ready(function(){
             return 'available';
          }            
                
-         $(document).ready(function() {            
+         $(document).ready(function() {   
+            onLoadTable();
+         });
+            
+            function onLoadTable(){
             var $cart = $('#selected-seats'),
-               $counter = $('#counter'),
-               sc = $('#seat-map').seatCharts({
-               map: [
-                  /*'ffffff',
-                  'mmmmmm',
-                  'mmmmmm',
-                  'mmmmmm',
-                  'mmmmmm',
-                  'mmmmmm',
-                  'mmmmmm',   
-                  'mmmmmm',*/      
-                  <%for(int i=0; i<indexMap.size(); i++){%>
-                     "<%=indexMap.get(i)%>",
-                  <%}%>
+             $counter = $('#counter'),
+             sc = $('#seat-map').seatCharts({
+             map: [
+                /*'ffffff',
+                'mmmmmm',
+                'mmmmmm',
+                'mmmmmm',
+                'mmmmmm',
+                'mmmmmm',
+                'mmmmmm',   
+                'mmmmmm',*/      
+               <%for(int i=0; i<indexMap.size(); i++){%>
+                  "<%=indexMap.get(i)%>",
+                <%}%> 
 
-               ],
-               seats: {
-                  f: {
-                     classes : 'first-class', //your custom CSS class
-                     category: '4인석'
-                  },
-                  e: {
-                     classes : 'economy-class', //your custom CSS class
-                     category: '2인석'
-                  },
-                  m: {
-                     classes : 'empty', //your custom CSS class
-                     category: '배치'
-                  },               
-               
-               },
-               naming : {
-                  top : false,
-                  getLabel : function (character, row, column) {
-                     return firstSeatLabel++;
-                  },
-               },
-               legend : {
-                  node : $('#legend'),                  
-                  items : [
-                     [ 'm', 'empty',   '배치' ],
-                     [ 'f', 'available',   '4인석' ],
-                     [ 'e', 'available',   '2인석'],
-                     [ 'f', 'unavailable', '예약된 좌석']
-                   ]               
-               },
-               click: function () {
-                  var un_flag=true; //현재 unavailable인 상태
-                  var select_val = document.getElementById("select_box").value;                     
-                  if (this.status() == 'available') {//************************Can click***************
-                     //let's create a new <li> which we'll add to the cart items
-                     if(position=='user'){   // 유저가 고객일때            
-                        $('<li>'+this.data().category+' Seat # '+this.settings.label+': <b>'+'</b> <a href="#" class="cancel-cart-item">[cancel]</a></li>')
-                           .attr('id', 'cart-item-'+this.settings.id)
-                           .data('seatId', this.settings.id)
-                           .appendTo($cart);                           
-                           $counter.text(sc.find('selected').length+1);
-                           settingsId = this.settings.id;
-                           unavailArr.push(this.settings.id);//고객이 선택한 좌석 update 위해서 저장
-                           reservationTableInx.push(this.settings.id);//고객 선택 좌석 receipt에 따로 넣어주기 위함
-                           
-                           console.log("선택:"+unavailArr);
-                                                      
-                           return 'selected';
-                        }else if(position=='store'){ //유저가 관리자일때
-                           if(select_val=='4인석') {
-                              sc.find('four').length+1; // length를 늘리기 위함(count와는 별개)
-                              countSum += 1;
-                              $counter.text(countSum);
-                              if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"f"); }
-                              return 'four'; //4인석 반환
-                           }
-                           else if(select_val=='2인석') {
-                              sc.find('to').length+1; // length를 늘리기 위함(count와는 별개)
-                              countSum += 1;
-                              $counter.text(countSum);
-                              if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"e"); }
-                              return 'to'; //2인석 반환
-                           }
-                           else if(select_val=='예약된좌석') {
-                              //$counter.text(sc.find('unavailable').length+1);
-                              unavailArr.push(this.settings.id);//예약된 좌석 update 위해서 저장
-                              if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"f"); }
-                              console.log(unavailArr);
-                              return 'unavailable'; //2인석 반환
-                           }
-                        }                     
+             ],
+             seats: {
+                f: {
+                   classes : 'first-class', //your custom CSS class
+                   category: '4인석'
+                },
+                e: {
+                   classes : 'economy-class', //your custom CSS class
+                   category: '2인석'
+                },
+                m: {
+                   classes : 'empty', //your custom CSS class
+                   category: '배치'
+                },               
+             
+             },
+             naming : {
+                top : false,
+                getLabel : function (character, row, column) {
+                   return firstSeatLabel++;
+                },
+             },
+             legend : {
+                node : $('#legend'),                  
+                items : [
+                   [ 'm', 'empty',   '배치' ],
+                   [ 'f', 'available',   '4인석' ],
+                   [ 'e', 'available',   '2인석'],
+                   [ 'f', 'unavailable', '예약된 좌석']
+                 ]               
+             },
+             click: function () {
+                var un_flag=true; //현재 unavailable인 상태
+                var select_val = document.getElementById("select_box").value;                     
+                if (this.status() == 'available') {//************************Can click***************
+                   //let's create a new <li> which we'll add to the cart items
+                   if(position=='user'){   // 유저가 고객일때            
+                      $('<li>'+this.data().category+' Seat # '+this.settings.label+': <b>'+'</b> <a href="#" class="cancel-cart-item">[cancel]</a></li>')
+                         .attr('id', 'cart-item-'+this.settings.id)
+                         .data('seatId', this.settings.id)
+                         .appendTo($cart);                           
+                         $counter.text(sc.find('selected').length+1);
+                         settingsId = this.settings.id;
+                         unavailArr.push(this.settings.id);//고객이 선택한 좌석 update 위해서 저장
+                         reservationTableInx.push(this.settings.id);//고객 선택 좌석 receipt에 따로 넣어주기 위함
+                         
+                         console.log("선택:"+unavailArr);
+                                                    
+                         return 'selected';
+                      }else if(position=='store'){ //유저가 관리자일때
+                         if(select_val=='4인석') {
+                            sc.find('four').length+1; // length를 늘리기 위함(count와는 별개)
+                            countSum += 1;
+                            $counter.text(countSum);
+                            if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"f"); }
+                            return 'four'; //4인석 반환
+                         }
+                         else if(select_val=='2인석') {
+                            sc.find('to').length+1; // length를 늘리기 위함(count와는 별개)
+                            countSum += 1;
+                            $counter.text(countSum);
+                            if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"e"); }
+                            return 'to'; //2인석 반환
+                         }
+                         else if(select_val=='예약된좌석') {
+                            //$counter.text(sc.find('unavailable').length+1);
+                            unavailArr.push(this.settings.id);//예약된 좌석 update 위해서 저장
+                            if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"f"); }
+                            console.log(unavailArr);
+                            return 'unavailable'; //2인석 반환
+                         }
+                      }                     
 
-                  } else if(this.status()=='selected' || this.status()=='to' || this.status()=='four') {//************************Cancle click***************
-                     if(position=='user'){//유저가 고객일때
-                        //update the counter
-                        $counter.text(sc.find('selected').length-1);                     
-                        //remove the item from our cart
-                        settingsId = this.settings.id;
-                        $('#cart-item-'+this.settings.id).remove();      
-                        
-                        let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index                        
-                        let pos2 = reservationTableInx.indexOf(""+this.settings.id+""); //삭제할 index                        
-                        unavailArr.splice(pos,1);//unavailArray 요소 삭제(고객이 선택한 좌석 취소시 요소 삭제)
-                        reservationTableInx.splice(pos,1);
-                        console.log("해제:"+unavailArr);
-                        return 'available';
+                } else if(this.status()=='selected' || this.status()=='to' || this.status()=='four') {//************************Cancle click***************
+                   if(position=='user'){//유저가 고객일때
+                      //update the counter
+                      $counter.text(sc.find('selected').length-1);                     
+                      //remove the item from our cart
+                      settingsId = this.settings.id;
+                      $('#cart-item-'+this.settings.id).remove();      
+                      
+                      let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index                        
+                      let pos2 = reservationTableInx.indexOf(""+this.settings.id+""); //삭제할 index                        
+                      unavailArr.splice(pos,1);//unavailArray 요소 삭제(고객이 선택한 좌석 취소시 요소 삭제)
+                      reservationTableInx.splice(pos,1);
+                      console.log("해제:"+unavailArr);
+                      return 'available';
 
-                     }else if(position=='store'){
-                        if(select_val=='4인석') {                                 
-                           sc.find('four').length-1;
-                           countSum -= 1;
-                           $counter.text(countSum);
-                           if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"_"); }//예약된 좌석에 포함되 있으면 mapArr안바꿈,그대로 진행
-                           $('#cart-item-'+this.settings.id).remove();
-                           let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index
-                           unavailArr.splice(pos,1);//unavailArray 요소 삭제(고객이 선택한 좌석 취소시 요소 삭제)
-                           console.log(unavailArr);
-                           return 'available';
-                        }
-                        else if(select_val=='2인석') {
-                           sc.find('to').length-1;
-                           countSum -= 1;
-                           $counter.text(countSum);
-                           if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"_");}
-                           $('#cart-item-'+this.settings.id).remove();
-                           let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index
-                           unavailArr.splice(pos,1);//unavailArray 요소 삭제(고객이 선택한 좌석 취소시 요소 삭제)
-                           console.log(unavailArr);
-                           return 'available';
-                        }            
-                     }
-                  } else if (this.status() == 'unavailable') {
-                     //seat has been already booked
-                     if(un_flag==true && position=='store') { //unavailable 상태고 관리자면
-                        un_flag=!un_flag;                     
-                        let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index
-                        if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"_"); }
-                        unavailArr.splice(pos,1);//unavailArray 요소 삭제
-                        
-                        console.log(unavailArr);
-                        return 'available';
-                     } 
-                     else {return 'unavailable';}
-                  } else {
-                     return this.style();
-                  }
-                  
-               }
+                   }else if(position=='store'){
+                      if(select_val=='4인석') {                                 
+                         sc.find('four').length-1;
+                         countSum -= 1;
+                         $counter.text(countSum);
+                         if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"_"); }//예약된 좌석에 포함되 있으면 mapArr안바꿈,그대로 진행
+                         $('#cart-item-'+this.settings.id).remove();
+                         let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index
+                         unavailArr.splice(pos,1);//unavailArray 요소 삭제(고객이 선택한 좌석 취소시 요소 삭제)
+                         console.log(unavailArr);
+                         return 'available';
+                      }
+                      else if(select_val=='2인석') {
+                         sc.find('to').length-1;
+                         countSum -= 1;
+                         $counter.text(countSum);
+                         if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"_");}
+                         $('#cart-item-'+this.settings.id).remove();
+                         let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index
+                         unavailArr.splice(pos,1);//unavailArray 요소 삭제(고객이 선택한 좌석 취소시 요소 삭제)
+                         console.log(unavailArr);
+                         return 'available';
+                      }            
+                   }
+                } else if (this.status() == 'unavailable') {
+                   //seat has been already booked
+                   if(un_flag==true && position=='store') { //unavailable 상태고 관리자면
+                      un_flag=!un_flag;                     
+                      let pos = unavailArr.indexOf(""+this.settings.id+""); //삭제할 index
+                      if(!unavailArr.includes(""+this.settings.id+"")){ castMap(this.settings.id,"_"); }
+                      unavailArr.splice(pos,1);//unavailArray 요소 삭제
+                      
+                      console.log(unavailArr);
+                      return 'available';
+                   } 
+                   else {return 'unavailable';}
+                } else {
+                   return this.style();
+                }
+                
+             }
             });
+         
+ 
 
             //this will handle "[cancel]" link clicks
             $('#selected-seats').on('click', '.cancel-cart-item', function () {
@@ -440,10 +454,9 @@ $(document).ready(function(){
             <%}%>
                         
             
-            
+            }
          
-      });
-
+   
       //fn.node().on('click', function(){})
             
 
@@ -478,13 +491,53 @@ $(document).ready(function(){
       }   
      }*/
 });
+
+function connect(){
+    //connect to server!!
+    sock = new SockJS("http://localhost:8888/rest/ws/client");
+
+    //웹소켓 객체가 생성되었으므로, 이 시점 부터는 각종 이벤트를 처리하자!!
+    //서버와 연결을 성공했을때의 이벤트 
+    sock.onopen=function(e){
+      
+    }
+    
+    sock.onclose=function(e){
+    
+    }
+
+    //서버로부터 메시지가 도착했을때..
+    sock.onmessage=function(e){
+        var msg = e.data;
+        
+        console.log("msg is =", msg);
+
+        var json = JSON.parse(msg);        
+        console.log("웹소켓을 통해 서버로부터 받은 메시지: ", json.requestCode);
+
+
+        if(json.requestCode=="create"){//누군가 서버에 글 쓰면..
+           window.location.reload();
+        }else if(json.requestCode=="read"){
+            
+        }else if(json.requestCode=="update"){//누군가 서버에 글 수정하면..
+            getList();
+        }else if(json.requestCode=="delete"){//누군가 서버에 글 삭제하면..
+           window.location.reload();
+        }
+
+   
+    }
+    
+}   
+
 </script>
 </head>
 <body>
 <%@ include file="../shop/inc/top.jsp" %>
 <div class="wrapper">
   <div class="container">
-  <h1 style="text-align: center;">좌석 배치도</h1>
+  <h1 style="text-align: center;" id="board-title">좌석 배치도</h1>
     <div id="seat-map">
       <div class="front-indicator">Front</div>
     </div>

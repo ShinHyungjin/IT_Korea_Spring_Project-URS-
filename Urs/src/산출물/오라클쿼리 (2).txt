@@ -173,12 +173,12 @@ ALTER TABLE receipt ADD CONSTRAINTS fk_storereceipt FOREIGN KEY (store_id) refer
 ALTER TABLE menu ADD CONSTRAINTS fk_storemenu FOREIGN KEY (store_id) references store(store_id);
 
 --- 카테고리 이미지 등록 ---
-insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '한식', 'koreanfood_icon.png');
-insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '중식', 'chinesfood_icon.png');
-insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '일식', 'japanesfood_icon.png');
-insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '남미식', 'latinamericanfood_icon.png');
-insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '양식', 'westernstylefood_icon.png');
-insert into category(category_id, categroy_name, category_image) values(seq_category.nextval, '패스트푸드', 'fastfood_icon.png');
+insert into category(category_id, category_name, category_image) values(seq_category.nextval, '한식', 'koreanfood_icon.png');
+insert into category(category_id, category_name, category_image) values(seq_category.nextval, '중식', 'chinesfood_icon.png');
+insert into category(category_id, category_name, category_image) values(seq_category.nextval, '일식', 'japanesfood_icon.png');
+insert into category(category_id, category_name, category_image) values(seq_category.nextval, '남미식', 'latinamericanfood_icon.png');
+insert into category(category_id, category_name, category_image) values(seq_category.nextval, '양식', 'westernstylefood_icon.png');
+insert into category(category_id, category_name, category_image) values(seq_category.nextval, '패스트푸드', 'fastfood_icon.png');
 
 --- 점포 등록 ---
 insert into store(store_id, store_name, store_location, store_phone, store_repimg, store_reservation, store_openhour, store_closehour, store_pass, category_id, store_account, store_image, store_info, store_tablecount, member_id)  values(seq_store.nextval, '연안식당', '강남점', '02-1234-5678', 'kfbusiness.png', 'TRUE', '12:00', '23:00', 'FALSE', 1, '0222123-03-142', 'yeonan.png', '마싯는 꼬막비빔밥 파라요', 20, 2);

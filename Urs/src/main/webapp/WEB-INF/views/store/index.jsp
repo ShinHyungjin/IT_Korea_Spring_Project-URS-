@@ -23,6 +23,14 @@
 
   <!-- Custom styles for this template -->
   <link href="/resources/css/shop-homepage.css" rel="stylesheet">
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 
 <style type="text/css">
 .list-group a {
@@ -40,14 +48,113 @@ td, th, tr{
 
 </style>
 
-<script>
+<script type="text/babel">
+var sock; //이 html을 배포한 서버와 연결된 소켓 얻기!!
+
+//재사용 가능성이 높은 html 태그를 리엑트의 컴포넌트로 등록
+class TableContent extends React.Component{
+
+    deleteItem(receipt_id,bootpay_id){
+        return function(){//무조건 호출방지를 위한 익명함수 및 리턴...
+            remove(receipt_id,bootpay_id);
+        }
+    }
+
+    render(){
+        var row=[];//tr을 누적할 배열    
+        for(var i=0;i<this.props.dataList[0].length;i++){
+            var receipt = this.props.dataList[0][i];//게시물 하나 꺼낸다
+            var member = this.props.dataList[1][i];//게시물 하나 꺼낸다
+            var store = this.props.dataList[2][i];//게시물 하나 꺼낸다
+
+            row.push(
+                <tr>
+                    <td>{i}</td>
+                    <td>{member.user_name}</td>
+                    <td>{store.store_name}</td>
+                    <td>{receipt.receipt_regdate}</td>
+                    <td>{receipt.receipt_totalamount}</td>
+                    <button class="btn btn-primary" mdbWavesEffect type="button" onClick={this.deleteItem(receipt.receipt_id,receipt.bootpay_id)}>승인</button>
+                </tr>                
+            );
+        }
+
+        return (
+                <table class="table table-hover" id="table">
+                   <thead>
+                     <tr class="table-primary">
+                       <th scope="col">결제 ID</th>
+                             <th scope="col">예약 고객 이름</th>
+                             <th scope="col">예약 점포</th>
+                             <th scope="col">예약 날짜</th>
+                             <th scope="col">결제 금액</th>
+                             <th scope="col">결제 취소 처리</th>
+                     </tr>
+                   </thead>
+                   <tbody class="receipt_table" id="receipt_table">
+         
+                   {row}
+              
+                      </tbody>
+                      </table>
+                   
+        )
+    };
+}
+
+
+//문서가 로드되면, 웹소켓 서버에 접속을 시도하자!
+$(function(){
+   getList();
+   connect();
+});
+
  
-function remove(obj){
+function connect(){
+    //connect to server!!
+    sock = new SockJS("http://localhost:8888/rest/ws/client");
+
+    //웹소켓 객체가 생성되었으므로, 이 시점 부터는 각종 이벤트를 처리하자!!
+    //서버와 연결을 성공했을때의 이벤트 
+    sock.onopen=function(e){
+      }
+    
+    sock.onclose=function(e){
+    
+    }
+
+    //서버로부터 메시지가 도착했을때..
+    sock.onmessage=function(e){
+        var msg = e.data;
+        
+        console.log("msg is =", msg);
+
+        var json = JSON.parse(msg);        
+        console.log("웹소켓을 통해 서버로부터 받은 메시지: ", json.requestCode);
+
+
+        if(json.requestCode=="create"){//누군가 서버에 글 쓰면..
+            getList();
+        }else if(json.requestCode=="read"){
+
+        }else if(json.requestCode=="update"){//누군가 서버에 글 수정하면..
+            getList();
+        }else if(json.requestCode=="delete"){//누군가 서버에 글 삭제하면..
+            getList();
+        }
+
+   
+    }
+    
+}   
+ 
+function remove(obj,obj2){
     $.ajax({
-       url:"/store/manage/payment/paymentdelete",
-       type:"get",
+       url:"/rest/store/manage/payment/paymentdelete",
+       type:"POST",
        data:{
-          receipt_id:obj
+          receipt_id:obj,
+        bootpay_id:obj2
        },
        success:function(result){
           $("#receipt_table").empty();
@@ -73,6 +180,23 @@ function remove(obj){
        }
     });
  }
+ 
+ 
+//비동기로 데이터 가져오기 
+function getList(){
+    $.ajax({
+        url:"/rest/receipt",
+        type:"GET",
+        success:function(responseData){
+            //화면 갱신..react로...
+            console.log(responseData[0][0]);
+            console.log(responseData[1][0]);
+            console.log(responseData[2][0].store_name);
+            ReactDOM.render(<TableContent dataList={responseData}/>, document.getElementById("receipt-list"));
+         
+        }
+    });
+}
 
 </script>
 
@@ -90,35 +214,10 @@ function remove(obj){
       </div>
        <div class="col-lg-9">
 
-        <div style="text-align: center;"><h1>주문 요청</h1></div>
+        <div style="text-align: center;"   id="board-title" ><h1>주문 요청</h1></div>
 
-        <div class="row">
+        <div class="row" id="receipt-list">
 
-     <table class="table table-hover" id="table">
-        <thead>
-          <tr class="table-primary">
-            <th scope="col">결제 ID</th>
-                  <th scope="col">예약 고객 이름</th>
-                  <th scope="col">예약 점포</th>
-                  <th scope="col">예약 날짜</th>
-                  <th scope="col">결제 금액</th>
-                  <th scope="col">결제 취소 처리</th>
-          </tr>
-        </thead>
-        <tbody class="receipt_table" id="receipt_table">
-           <%for(int i=0; i<receiptList.size(); i++){ %>
-              <%Receipt receipt = receiptList.get(i); store = storeList.get(i); Member member = memberList.get(i); %>
-                   <tr>
-                     <th scope="row"><%=receipt.getReceipt_id()%></th>
-                     <td><a href="/store/manage/payment/paymentdetail?receipt_id=<%=receipt.getReceipt_id()%>"><%=member.getUser_name()%></a></td>
-                     <td><%=store.getStore_name()%></td>
-                     <td><%=receipt.getReceipt_regdate()%></td>
-                     <td><%=receipt.getReceipt_totalamount()%></td>
-                     <td><button class="btn btn-primary" mdbWavesEffect type="button" onClick="remove(<%=receipt.getReceipt_id()%>);">승인</button></td>
-                   </tr>
-                <%} %>
-           </tbody>
-         </table>
         </div>
       </div>
     </div>

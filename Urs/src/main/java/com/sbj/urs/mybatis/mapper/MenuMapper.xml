@@ -2,9 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Menu">
 
-   <!-- <select id="selectAll" resultType="Menu">
+   <select id="selectAll" resultType="Menu">
       select * from menu order by menu_id
-   </select> -->
+   </select>  
+   
+   
    <select id="select" resultType="Menu" parameterType="int">
          select * from menu where menu_id=#{menu_id}
    </select>

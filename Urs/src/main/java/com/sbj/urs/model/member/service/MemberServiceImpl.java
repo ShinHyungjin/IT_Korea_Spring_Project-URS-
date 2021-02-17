@@ -178,6 +178,24 @@ public class MemberServiceImpl implements MemberService{
 		memberDAO.changePass(mebmer);
 		
 	}
+	
+	   @Override
+	   public void RESTregist(Member member) {
+	      //암호화 처리 
+	      String secureData = secureManager.getSecureData(member.getUser_password());
+	      member.setUser_password(secureData); //변환시켜 다시 VO에 대입
+	      
+	      String authkey = new TempKey().getKey(50, false);
+	      member.setAuthkey(authkey);
+	      memberDAO.insert(member);
+	      
+	      String name=member.getUser_name();
+	      String addr=member.getUser_email_id();
+	      String verifylink ="http://localhost:8888/shop/member/verify?user_id="+member.getUser_id()+"&authkey="+member.getAuthkey();
+	      String email = member.getUser_email_id()+"@"+member.getUser_email_server();
+	      
+	      mailSender.send(email , name+"님 [URS]가입축하드려요", verifylink);
+	   }
 
 //	@Override
 //	public Member selectBySotreId(int store_id) {

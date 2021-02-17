@@ -1,10 +1,13 @@
 package com.sbj.urs.controller.store;
 
+import org.apache.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import org.apache.commons.io.IOUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sbj.urs.model.Common.BootpayApi;
 import com.sbj.urs.model.Common.FileManager;
 import com.sbj.urs.model.domain.Member;
 import com.sbj.urs.model.domain.Menu;
@@ -28,6 +32,8 @@ import com.sbj.urs.model.reservation.service.ReservationService;
 import com.sbj.urs.model.store.service.MenuService;
 import com.sbj.urs.model.store.service.StoreService;
 import com.sbj.urs.model.store.service.TableMapService;
+
+import kr.co.bootpay.javaApache.model.request.Cancel;
 
 @Controller
 public class StoreController {
@@ -96,55 +102,89 @@ public class StoreController {
 	      return mav;
 	   }
 
-	   // 점포가 store/manage 페이지에서 비동기로 삭제시 결제를 삭제하면 해당 영수증을 삭제하기 전에 예약을 먼저 삭제해야함, 그리고 다시 영수증 목록을 불러옴
-	   @RequestMapping(value = "/store/manage/payment/paymentdelete", method = RequestMethod.GET)
-	   @ResponseBody
-	   public List deletePayment(HttpServletRequest request, int receipt_id) {
-		   Receipt receipt =  receiptService.select(receipt_id); //receipt에서 선택한 테이블 얻기 위함
-		     String cancleTable = receipt.getReservation_table();
-		     TableMap tablemap =  tableMapService.selectById(receipt.getStore_id());
-		     String unavailstr=""; //선택한 좌석 취소 후, 업데이트한 unavailable;
-		     String unavailable = tablemap.getUnavailable();
-		     String[] unavailArr = unavailable.split(",");//
-		     String[] cancleTableArr = cancleTable.split(","); //취소용 split
-		     List<String> unavailList = new ArrayList<String>();
-		     for(int i=0; i<unavailArr.length; i++) {
-		        unavailList.add(unavailArr[i]);
-		     }
-		     //System.out.println("unavailable:"+ unavailable);
-		     for(int i=0; i<cancleTableArr.length; i++) {
-		        int pos =unavailList.indexOf(cancleTableArr[i]);
-		        unavailList.remove(pos);
-		     }
-		     
-		     for(int j=0; j<unavailList.size(); j++) {
-		        unavailstr += unavailList.get(j);
-		        if(j!=unavailList.size()-1) {unavailstr+=",";}
-		     }
-		     tablemap.setUnavailable(unavailstr);
-		     
-		     tableMapService.updateReservation(tablemap); //손님이 선택한 좌석 취소          
-		      reservationService.delete(receipt_id);//손님이 결제한 내역 삭제
-		      receiptService.delete(receipt_id);//손님이 결제한 영수증 삭제
-		      
-		      List<Receipt> receiptList = receiptService.selectAll();
-		      List<Member> memberList = new ArrayList<Member>();
-		      List<Store> storeList = new ArrayList<Store>();
-		      for(int i=0; i<receiptList.size(); i++) {
-		         Member member = memberService.selectOne(receiptList.get(i).getMember_id());
-		         memberList.add(member);
-		         Store store = storeService.selectById(receiptList.get(i).getStore_id());
-		         storeList.add(store);
-		         System.out.println("receiptList size : "+receiptList.size()+"\t receipt_id : " + receiptList.get(i).getReceipt_id());
-		         System.out.println("memberList size : "+memberList.size()+"\t user_name : " + memberList.get(i).getUser_name());
-		         System.out.println("storeList size : "+storeList.size()+"\t store_name : " + storeList.get(i).getStore_name());
-		      }
-		      List<List> totalList = new ArrayList<List>();
-		      totalList.add(receiptList);
-		      totalList.add(memberList);
-		      totalList.add(storeList);
-		      return totalList;
-		   }
+	// 점포가 store/manage 페이지에서 비동기로 삭제시 결제를 삭제하면 해당 영수증을 삭제하기 전에 예약을 먼저 삭제해야함, 그리고 다시 영수증 목록을 불러옴
+	      @RequestMapping(value = "/store/manage/payment/paymentdelete", method = RequestMethod.GET)
+	      @ResponseBody
+	      public List deletePayment(HttpServletRequest request, int receipt_id,String bootpay_id) {
+	         Receipt receipt =  receiptService.select(receipt_id); //receipt에서 선택한 테이블 얻기 위함
+	           String cancleTable = receipt.getReservation_table();
+	           TableMap tablemap =  tableMapService.selectById(receipt.getStore_id());
+	           String unavailstr=""; //선택한 좌석 취소 후, 업데이트한 unavailable;
+	           String unavailable = tablemap.getUnavailable();
+	           String[] unavailArr = unavailable.split(",");//
+	           String[] cancleTableArr = cancleTable.split(","); //취소용 split
+	           List<String> unavailList = new ArrayList<String>();
+	           for(int i=0; i<unavailArr.length; i++) {
+	              unavailList.add(unavailArr[i]);
+	           }
+	           //System.out.println("unavailable:"+ unavailable);
+	           for(int i=0; i<cancleTableArr.length; i++) {
+	              int pos =unavailList.indexOf(cancleTableArr[i]);
+	              unavailList.remove(pos);
+	           }
+	           
+	           for(int j=0; j<unavailList.size(); j++) {
+	              unavailstr += unavailList.get(j);
+	              if(j!=unavailList.size()-1) {unavailstr+=",";}
+	           }
+	           tablemap.setUnavailable(unavailstr);
+	           
+	           if(tablemap.getUnavailable() == "") {
+	        	   tablemap.setUnavailable("0_0");
+	           }
+	           
+	           tableMapService.updateReservation(tablemap); //손님이 선택한 좌석 취소          
+	            reservationService.delete(receipt_id);//손님이 결제한 내역 삭제
+	            receiptService.delete(receipt_id);//손님이 결제한 영수증 삭제
+	            
+	            List<Receipt> receiptList = receiptService.selectAll();
+	            List<Member> memberList = new ArrayList<Member>();
+	            List<Store> storeList = new ArrayList<Store>();
+	            for(int i=0; i<receiptList.size(); i++) {
+	               Member member = memberService.selectOne(receiptList.get(i).getMember_id());
+	               memberList.add(member);
+	               Store store = storeService.selectById(receiptList.get(i).getStore_id());
+	               storeList.add(store);
+	               System.out.println("receiptList size : "+receiptList.size()+"\t receipt_id : " + receiptList.get(i).getReceipt_id());
+	               System.out.println("memberList size : "+memberList.size()+"\t user_name : " + memberList.get(i).getUser_name());
+	               System.out.println("storeList size : "+storeList.size()+"\t store_name : " + storeList.get(i).getStore_name());
+	            }
+	            List<List> totalList = new ArrayList<List>();
+	            totalList.add(receiptList);
+	            totalList.add(memberList);
+	            totalList.add(storeList);
+	            
+	            BootpayApi api = new BootpayApi(
+	                    "602379255b2948002151ff47",
+	                    "RKpfX82izfRy8J2+L1tuc2rWFXIFnEEh487GlLjvNbo="
+	            );
+	            
+	            try {
+					api.getAccessToken();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+	            
+	            
+
+
+	            Cancel cancel = new Cancel();
+	            cancel.receipt_id = bootpay_id;
+	            cancel.name = "urs";
+	            cancel.reason = "택배 지연에 의한 구매자 취소요청";
+
+	            try {
+	                HttpResponse res = api.cancel(cancel);
+	                String str = IOUtils.toString(res.getEntity().getContent(), "UTF-8");
+	                System.out.println(str);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	            
+	            
+	            return totalList;
+	         }
 
 	   // 점포가 PaymentDetail에서 삭제하기 버튼 클릭시 동기적으로 삭제
 	   @RequestMapping(value = "/store/manage/payment/paymentdetaildelete", method = RequestMethod.POST)

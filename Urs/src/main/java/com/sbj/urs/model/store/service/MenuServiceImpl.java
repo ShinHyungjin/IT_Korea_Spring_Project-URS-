@@ -17,7 +17,7 @@ public class MenuServiceImpl implements MenuService{
 
    @Override
    public List selectAll() {
-      return null;
+      return menuDAO.selectAll();
    }
 
    @Override

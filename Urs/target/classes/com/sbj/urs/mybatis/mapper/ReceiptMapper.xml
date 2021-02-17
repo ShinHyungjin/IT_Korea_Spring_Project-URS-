@@ -3,8 +3,8 @@
 <mapper namespace="Receipt">            
    
      <insert id="insert" parameterType="Receipt">
-      insert into receipt(receipt_id,member_id,store_id,receipt_totalamount,menu_quantity, reservation_table) 
-      values(seq_receipt.nextval, #{member_id}, #{store_id},#{receipt_totalamount}, #{menu_quantity}, #{reservation_table})
+      insert into receipt(receipt_id,member_id,store_id,receipt_totalamount,menu_quantity, reservation_table,bootpay_id) 
+      values(seq_receipt.nextval, #{member_id}, #{store_id},#{receipt_totalamount}, #{menu_quantity}, #{reservation_table},#{bootpay_id})
       <selectKey order="AFTER" keyProperty="receipt_id" resultType="int">
          select seq_receipt.currval as receipt_id from dual
       </selectKey>

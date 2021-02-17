@@ -23,4 +23,5 @@ public interface MemberService {
 	public int countMember(); //멤버 수 불러오기
 	public void verifyEmail(Member member); //이메일 확인 
 	public void changePass(Member mebmer); //비밀변호 변경 
+	public void RESTregist(Member member); //RESTFUL 회원가입
 }

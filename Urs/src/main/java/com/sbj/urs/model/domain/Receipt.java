@@ -11,4 +11,5 @@ public class Receipt {
    private int receipt_totalamount;
    private int menu_quantity;
    private String reservation_table;
+   private String bootpay_id;
 }

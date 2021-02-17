@@ -412,6 +412,8 @@
                             </div>
                         </div>
                         
+                        <%if(address.length == 4) { %>
+                        
                    	<div class="row row-space">
                             <div class="col-12">
                                 <div class="input-group">
@@ -420,7 +422,8 @@
                                 </div>
                             </div>
                         </div>
-
+                        
+				<%} %>
                         
 					<div class="alert alert-danger" id="passwordsNoMatchRegister" role="alert" style="display:none;" >빈칸을 또는 비밀번호를 채워주세요</div>
 						

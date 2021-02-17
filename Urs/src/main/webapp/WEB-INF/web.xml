@@ -57,11 +57,16 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
 		<!-- 여러 클라이언트를 처리하려면, 서버는 비동기 처리가 지원되어야한다 -->
 		<async-supported>true</async-supported>
 	</servlet>
-		
+	
+	
+
 	<servlet-mapping>
 		<servlet-name>restServlet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
+	
+
+   
 	
 
 </web-app>

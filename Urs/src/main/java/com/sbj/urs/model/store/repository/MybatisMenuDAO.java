@@ -16,7 +16,7 @@ public class MybatisMenuDAO implements MenuDAO {
 
    @Override
    public List selectAll() {
-      return null;
+      return sqlSessionTemplate.selectList("Menu.selectAll");
    }
 
    @Override
