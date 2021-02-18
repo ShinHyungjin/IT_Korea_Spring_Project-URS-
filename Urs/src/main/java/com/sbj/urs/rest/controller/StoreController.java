@@ -37,6 +37,9 @@ import kr.co.bootpay.javaApache.model.request.Cancel;
 
 @RestController
 public class StoreController {
+	private static final String BOOTPAY_API_KEY = "Insert Your BootPay API KEY!";
+	private static final String BOOTPAY_RESTAPI_KEY = "Insert Your BootPay REST API KEY!";
+	
    
    @Autowired
    private StoreService storeService;
@@ -142,8 +145,8 @@ public class StoreController {
           totalList.add(storeList);
           
           BootpayApi api = new BootpayApi(
-                  "602379255b2948002151ff47",
-                  "RKpfX82izfRy8J2+L1tuc2rWFXIFnEEh487GlLjvNbo="
+        		  BOOTPAY_API_KEY,
+        		  BOOTPAY_RESTAPI_KEY
           );
           
           try {

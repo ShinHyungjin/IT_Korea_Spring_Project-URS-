@@ -34,6 +34,10 @@ public class BootpayApi {
     private final String URL_GET_USER_TOKEN = BASE_URL + "request/user/token";
     private final String URL_PAYMENT_LINK = BASE_URL + "request/payment";
     private final String URL_CERTIFICATE = BASE_URL + "certificate/";
+    
+    private static final String BOOTPAY_API_KEY = "Insert Your BootPay API KEY!";
+	private static final String BOOTPAY_RESTAPI_KEY = "Insert Your BootPay REST API KEY!";
+	
 
 //     private final String URL_SEND_SMS = BASE_URL + "push/sms.json";
 //     private final String URL_SEND_LMS = BASE_URL + "push/lms.json";
@@ -90,8 +94,8 @@ public class BootpayApi {
     }
 
     public void getAccessToken() throws Exception {
-        if(this.application_id == null || this.application_id.isEmpty()) throw new Exception("602379255b2948002151ff47");
-        if(this.private_key == null || this.private_key.isEmpty()) throw new Exception("RKpfX82izfRy8J2+L1tuc2rWFXIFnEEh487GlLjvNbo=");
+        if(this.application_id == null || this.application_id.isEmpty()) throw new Exception(BOOTPAY_API_KEY);
+        if(this.private_key == null || this.private_key.isEmpty()) throw new Exception(BOOTPAY_RESTAPI_KEY);
 
         Token token = new Token();
         token.application_id = this.application_id;

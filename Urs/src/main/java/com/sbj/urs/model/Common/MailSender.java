@@ -16,8 +16,8 @@ import com.sbj.urs.exceptoion.MailSendException;
 @Component
 public class MailSender {
 	String host = "smtp.gmail.com";
-	String user = "urs.untact.reservation@gmail.com";
-	String password = "ursbusiness123!";     
+	String user = "Insert Your Email!";
+	String password = "Insert Your Password!";     
 	Properties props = new Properties();
 	
 	public void send(String to,String title,String content) throws MailSendException {
