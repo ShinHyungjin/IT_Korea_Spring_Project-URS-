@@ -75,10 +75,10 @@ public class MemberServiceImpl implements MemberService{
 		
 		String name=member.getUser_name();
 		String addr=member.getUser_email_id();
-		String verifylink ="http://localhost:8888/shop/member/verify?user_id="+member.getUser_id()+"&authkey="+member.getAuthkey();
+		String verifylink ="http://localhost:9898/shop/member/verify?user_id="+member.getUser_id()+"&authkey="+member.getAuthkey();
 		String email = member.getUser_email_id()+"@"+member.getUser_email_server();
 		
-		mailSender.send(email , name+"님 [URS]가입축하드려요", verifylink);
+		//mailSender.send(email , name+"님 [URS]가입축하드려요", verifylink);
 		
 	
 		
@@ -161,7 +161,19 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	@Override
-	public void updateToAdmin(Member member) {
+	public void updateToAdmin(FileManager fileManager, Member member) {
+		Member obj = memberDAO.checkIdforpw(member.getUser_id());
+		if(member.getU_image().getOriginalFilename() == "") {
+			member.setUser_image(obj.getUser_image());
+		}else {
+			if(obj.getUser_image() != "") {
+			fileManager.deleteFile(fileManager.getSaveMemberDir()+File.separator+obj.getMember_id()+"."+obj.getUser_image());
+			}
+			String ext = fileManager.getExtend(member.getU_image().getOriginalFilename());
+			member.setUser_image(ext); //확장자 결정
+			String profile = obj.getMember_id()+"."+ext; 
+			fileManager.saveFile(fileManager.getSaveMemberDir()+File.separator+profile, member.getU_image());
+		}
 		memberDAO.updateToAdmin(member);
 	}
 	
