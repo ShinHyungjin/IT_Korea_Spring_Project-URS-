@@ -97,6 +97,9 @@ member_id number,
 store_id number,
 receipt_regdate date default sysdate,
 receipt_totalamount number not null,
+menu_quantity number, 
+reservation_table varchar2(200),
+bootpay_id varchar2(100),
 constraint fk_memberreceipt foreign key(member_id) references member(member_id),
 constraint fk_storereceipt foreign key(store_id) references store(store_id)
 );
