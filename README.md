@@ -47,3 +47,88 @@
 >### 메인 화면 (Github 용량제한으로 이미지 및 프레임이 다소 저품질)
 
 ![메인](./mdImages/main.gif)
+
+>### 메인 화면 버튼 구성
+
+![메인](./mdImages/main.png)
+
+>### 로그인
+
+![로그인](./mdImages/login.png)
+
+>### 비밀번호 찾기(메일로 임시 비밀번호 전송)
+
+![비밀번호 찾기](./mdImages/forgotpassword.png)
+
+>### 회원가입
+
+![회원가입](./mdImages/signup.png)
+
+>### 사용자 유형별 화면
+***
+>> ### 1.예약자
+
+>>> ### 예약자 메인화면
+>>>> ![예약자 메인](./mdImages/m_main.png)
+
+>>> ### 예약자 마이페이지
+>>>> ![예약자 마이페이지](./mdImages/m_mypage.png)
+
+>>> ### 예약자 카테고리 선택(중식)
+>>>> ![예약자 카테고리 선택](./mdImages/m_chineseFood.png)
+
+>>> ### 예약자 메뉴선택
+>>>> ![예약자 메뉴선택](./mdImages/m_choiceMenu.png)
+
+>>> ### 예약자 좌석선택
+>>>> ![예약자 좌석선택](./mdImages/m_choiceTable.png)
+>>>> ![예약자 좌석선택2](./mdImages/m_choiceTable2.png)
+
+>>> ### 예약자 결제
+>>>> ![예약자 결제](./mdImages/m_pay.png)
+
+>>> ### 예약자 결제목록
+>>>> ![예약자 결제목록](./mdImages/m_reservationList.png)
+
+***
+>> ### 2.가게주인
+
+>>> ### 가게주인 점포등록
+>>>> ![가게주인 점포등록](./mdImages/s_storeRegist.png)
+
+>>> ### 가게주인 주문관리(점포등록 후)
+>>>> ![가게주인 주문관리](./mdImages/s_order.png)
+
+>>> ### 가게주인 메뉴관리
+>>>> ![가게주인 메뉴관리](./mdImages/s_menuList.png)
+
+>>> ### 가게주인 메뉴추가
+>>>> ![가게주인 메뉴추가](./mdImages/s_menuAdd.png)
+
+>>> ### 가게주인 테이블 관리
+>>>> ![가게주인 테이블 관리](./mdImages/s_tablebatch.png)
+
+>>> ### 가게주인 테이블 관리 초기 설정
+>>>> ![가게주인 테이블 관리 초기 설정](./mdImages/s_tableBatchFirst.png)
+
+***
+>> ### 3.관리자
+
+>>> ### 관리자 점포관리
+>>>> ![관리자 점포관리](./mdImages/a_storeList.png)
+
+>>> ### 관리자 점포 상세조회
+>>>> ![관리자 점포 상세조회](./mdImages/a_storeDetail.png)
+
+>>> ### 관리자 점포 승인 후 메인화면
+>>>> ![관리자 점포 승인 후 메인화면](./mdImages/a_vipsAdd.png)
+
+>>> ### 관리자 고객관리
+>>>> ![관리자 고객관리](./mdImages/a_userList.png)
+
+>>> ### 관리자 고객 상세조회
+>>>> ![관리자 고객 상세조회](./mdImages/a_userDetail.png)
+
+>>> ### 관리자 결제관리
+>>>> ![관리자 결제관리](./mdImages/a_payList.png)
+
