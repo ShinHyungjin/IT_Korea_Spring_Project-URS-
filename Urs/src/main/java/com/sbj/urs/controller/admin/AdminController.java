@@ -228,7 +228,7 @@ public class AdminController {
 		System.out.println("member_id : " + member.getMember_id());
 		System.out.println("member_name : " + member.getUser_name());
 		
-		memberService.updateToAdmin(member);
+		memberService.updateToAdmin(fileManager, member);
 		List <Member> memberList = memberService.selectAll();
 		ModelAndView mav = new ModelAndView("admin/member/member_list");
 		mav.addObject("memberList", memberList);
