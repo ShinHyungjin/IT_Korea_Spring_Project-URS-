@@ -28,6 +28,8 @@ user_location varchar2(100) not null,
 user_image varchar2(50),
 user_position varchar2(10) not null default 'user',
 user_roulette varchar2(5) default 'false',
+authkey varchar2(100) ,
+authstatus varchar2(2) default '0',
 user_regdate date default sysdate
 );
 
@@ -47,6 +49,7 @@ store_openhour varchar2(10) not null,
 store_closehour varchar2(10) not null,
 store_pass varchar2(5) default 'false',
 category_id number not null,
+store_bank varchar2(30),
 store_account varchar2(40) not null,
 store_image varchar2(20),
 store_info clob,
@@ -106,7 +109,7 @@ start with 1;
 create table reservation(
 reservation_id number primary key,
 menu_id number not null,
-menu_count number not null,
+menu_count number,
 receipt_id number,
 constraint fk_menureservation foreign key(menu_id) references menu(menu_id),
 constraint fk_receiptreservation foreign key(receipt_id) references receipt(receipt_id)
@@ -138,6 +141,16 @@ review_star number not null,
 review_comment clob,
 constraint fk_memberreview foreign key(member_id) references member(member_id),
 constraint fk_storereview foreign key(store_id) references store(store_id)
+);
+
+--- 테이블 맵 생성 ----
+create table tablemap(
+tablemap_id NUMBER not null primary key,
+store_id NUMBER not null,
+map_index varchar2(200) default 'mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm',
+unavailable varchar2(200) default '0_0',
+is_first varchar2(10) default 'true',
+constraint fk_storetablemap foreign key(store_id) references store(store_id)
 );
 
 create sequence seq_tablemap
