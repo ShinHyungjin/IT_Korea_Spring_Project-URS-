@@ -47,7 +47,7 @@
 	</update>
 	
 	<update id="updateToAdmin" parameterType="Member">
-		update member set user_id=#{user_id}, user_name= #{user_name}, user_location=#{user_location} , user_phone=#{user_phone}, user_gender=#{user_gender}, user_email_id= #{user_email_id}, user_email_server= #{user_email_server} where member_id = #{member_id} 
+		update member set user_id=#{user_id}, user_name= #{user_name}, user_location=#{user_location} , user_phone=#{user_phone}, user_gender=#{user_gender}, user_email_id= #{user_email_id}, user_email_server= #{user_email_server}, user_position = #{user_position}, user_image=<if test='user_image == null and user_image=""'> #{user_image}</if> where member_id = #{member_id} 
 	</update>
 	
 	<update id="updateByPosition" parameterType="Member">
