@@ -59,7 +59,7 @@
            var reader = new FileReader();
               
            reader.onload = function (e) {
-                  $('#menu_image')
+                  $('#profile_image')
                       .attr('src', e.target.result)
                       .width(250)
                       .height(125);
@@ -79,9 +79,9 @@
             <div class="card card-4">
                 <div class="card-body">
                     <h2 class="title">'<%=member.getUser_name()%>' 회원 정보 수정</h2>
-                    <form id="memberForm">
+                    <form id="memberForm" enctype="multipart/form-data">
                         <div class="row row-space">
-                        	<input type="text" id="member_id" name="member_id" value="<%=member.getMember_id()%>">
+                        	<input type="hidden" id="member_id" name="member_id" value="<%=member.getMember_id()%>">
                             <div class="col-6">
                                 <div class="input-group">
                                     <label class="label">ID</label>
@@ -119,10 +119,10 @@
                                 <div class="input-group">
                                     <label class="label"> 성별 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
                                     <div class="p-t-10">
-                                        <label class="radio-container m-r-45">남자<input type="radio" name="user_gender" value="남자" <%if(member.getUser_gender().equals("male"))%><%= "checked=\"checked\""%>>
+                                        <label class="radio-container m-r-45">남자<input type="radio" name="user_gender" value="male" <%if(member.getUser_gender().equals("male"))%><%= "checked=\"checked\""%>>
                                             <span class="checkmark"></span>
                                         </label>
-                                        <label class="radio-container">여자<input type="radio" name="user_gender" value="여자" <%if(member.getUser_gender().equals("female"))%><%= "checked=\"checked\""%>>
+                                        <label class="radio-container">여자<input type="radio" name="user_gender" value="female" <%if(member.getUser_gender().equals("female"))%><%= "checked=\"checked\""%>>
                                             <span class="checkmark"></span>
                                         </label>
                                     </div>
@@ -154,7 +154,7 @@
                         <div class="row row-space">
                             <div class="col-8">
                               <div style="text-align: center" height="300px">
-                                     <img alt="user_image" id="user_image" src="/resources/data/member/<%=member.getMember_id() %>.<%=member.getUser_image()%>" width="250px">
+                                     <img alt="profile_image" id="profile_image" src="/resources/data/member/<%=member.getMember_id() %>.<%=member.getUser_image()%>" width="250px">
                                   </div>
                             </div>
                         </div>
@@ -163,8 +163,8 @@
                                  <label class="label">'<%=member.getUser_name()%>' 사진</label>
                                 <div class="input-group">
                            <div class="custom-file">
-                                <input type="file" name="user_image" class="custom-file-input" id="user_image" onchange="readURL(this,0)">
-                                <label class="custom-file-label" for="user_image">Choose file</label>
+                                <input type="file" name="u_image" class="custom-file-input" id="member_image" onchange="readURL(this)">
+                                <label class="custom-file-label" for="member_image">Choose file</label>
                            </div>
                                 </div>
                             </div>
@@ -190,7 +190,7 @@
                               </div>
                             </div>
                          </div>
-                        
+                        </form>
                   <div class="alert alert-danger" id="passwordsNoMatchRegister" role="alert" style="display:none;" >빈칸을 채워주세요!!</div>
                   
                 <div id="loader" style="margin:auto"></div>
@@ -199,7 +199,7 @@
                    &nbsp;&nbsp;&nbsp;&nbsp;   
                      <button class="btn btn-primary" mdbWavesEffect type="button" style="width:16rem" onClick="location.href='/admin/member/memberlist';">고객 목록가기</button>
                </div>
-                 </form>
+                 
          </div>
       </div>
    </div>
